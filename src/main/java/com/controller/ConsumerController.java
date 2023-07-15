@@ -1,8 +1,9 @@
-package com.example.demo;
+package com.controller;
 
-import com.example.demo.notification.Notification;
+import com.model.Notification;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,9 +30,9 @@ public class ConsumerController {
 
     @GetMapping("/note")
     public ResponseEntity<Notification> receiveNotification(){
-        final Object notification = rabbitTemplate.receiveAndConvert("test");
-        if (notification instanceof Notification) {
-            return ResponseEntity.ok((Notification) notification);
+        final Notification notification = rabbitTemplate.receiveAndConvert("test", ParameterizedTypeReference.forType(Notification.class));
+        if (notification != null) {
+            return ResponseEntity.ok(notification);
         }
         return ResponseEntity.noContent().build();
     }
